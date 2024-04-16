@@ -5,20 +5,18 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
   ModalBody,
   ModalFooter,
   Text,
   useToast,
-  Heading,
   Stack,
   Box,
   Flex,
   Select,
 } from "@chakra-ui/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { DownloadIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Column, columnLabels, urls } from "../../utils/consts";
 
 enum UploadStage {
@@ -61,9 +59,9 @@ function UploadModal() {
   });
 
   const {
-    data: colAssignData,
+    // data: colAssignData,
     mutateAsync: colAssignMutate,
-    isPending: colAssignIsPending,
+    // isPending: colAssignIsPending,
   } = useMutation({
     mutationFn: (formData: FormData) =>
       fetch(urls.upload.confirm, {
@@ -82,7 +80,7 @@ function UploadModal() {
     //   return;
     // }
     try {
-      const res = await preUploadMutate(formData);
+      await preUploadMutate(formData);
       setUploadStage(UploadStage.ColAssignment);
     } catch (e) {
       console.error(e);
@@ -97,7 +95,7 @@ function UploadModal() {
     formData.append("cols", JSON.stringify(selectedFilters));
     console.log(formData.get("file"));
     try {
-      const res = await colAssignMutate(formData);
+      await colAssignMutate(formData);
     } catch (e) {
       console.error(e);
       errorToast();

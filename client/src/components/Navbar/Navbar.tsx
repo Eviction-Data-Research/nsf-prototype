@@ -1,7 +1,7 @@
-import { Text, Flex, Heading, IconButton, Button, Box } from "@chakra-ui/react";
+import { Flex, Heading, IconButton, Button, Box } from "@chakra-ui/react";
 import { HamburgerIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import { BiBarChartSquare } from "react-icons/bi";
-import { PopupType, useOpenPopup } from "./NavbarWrapper";
+import { PopupType } from "./NavbarWrapper";
 
 interface Props {
   openPopup: PopupType | undefined;

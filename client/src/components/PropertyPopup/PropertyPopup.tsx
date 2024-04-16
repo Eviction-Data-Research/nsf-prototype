@@ -1,27 +1,11 @@
-import { Box, Flex, IconButton, Portal, Spinner, Text } from "@chakra-ui/react";
+import { Flex, IconButton, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 import { urls } from "../../utils/consts";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Maximize2 } from "lucide-react";
 import Statistic from "./Statistic";
 import { BiBell, BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  AreaChart,
-  ReferenceLine,
-  Area,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  LabelList,
-} from "recharts";
+import { XAxis, ResponsiveContainer, BarChart, Bar, LabelList } from "recharts";
 
 type CaresProperty = {
   id: number;
