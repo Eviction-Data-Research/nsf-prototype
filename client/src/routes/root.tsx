@@ -8,14 +8,15 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { urls } from "../utils/consts";
 import { scaleLinear } from "d3-scale";
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 import PropertyPopup from "../components/PropertyPopup/PropertyPopup";
 import { MapViewState } from "@deck.gl/core/typed";
 import { useOpenPopup } from "../components/Navbar/NavbarWrapper";
 import AboutPopup from "../components/Navbar/AboutPopup";
 import ChartPopup from "../components/Navbar/ChartPopup";
+import SuggestionsPopup from "../components/Navbar/SuggestionsPopup/SuggestionsPopup";
 
-export type County = "fulton" | "dekalb" | "clayton" | "cobb" | "gwinnett";
+export type County = "Fulton" | "DeKalb" | "Clayton" | "Cobb" | "Gwinnett";
 export type FilterState = {
   counties: County[];
   dateFrom: Date | undefined;
@@ -69,7 +70,7 @@ function Home() {
     CaresProperty["id"] | undefined
   >();
   const [filterState, setFilterState] = useState<FilterState>({
-    counties: ["fulton", "dekalb"],
+    counties: ["Fulton", "DeKalb"],
     dateFrom: undefined,
     dateTo: undefined,
     minCount: 0,
@@ -156,10 +157,21 @@ function Home() {
         </DeckGL>
         <Sidebar filterState={filterState} setFilterState={setFilterState} />
         {openPopup === "property" && (
-          <PropertyPopup caresId={selectedProperty} />
+          <PropertyPopup
+            caresId={selectedProperty}
+            dateFrom={filterState.dateFrom}
+            dateTo={filterState.dateTo}
+            setSelectedProperty={setSelectedProperty}
+          />
         )}
         {openPopup === "about" && <AboutPopup />}
-        {openPopup === "chart" && <ChartPopup />}
+        {openPopup === "chart" && (
+          <ChartPopup
+            filterState={filterState}
+            numBuildings={data?.records.length}
+          />
+        )}
+        {openPopup === "suggestions" && <SuggestionsPopup />}
       </Flex>
       {/* <UploadModal /> */}
     </Box>

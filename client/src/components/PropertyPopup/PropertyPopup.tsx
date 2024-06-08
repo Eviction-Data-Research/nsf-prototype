@@ -1,42 +1,58 @@
-import { Flex, IconButton, Text } from "@chakra-ui/react";
+import { Flex, IconButton, Skeleton, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { urls } from "../../utils/consts";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Maximize2 } from "lucide-react";
 import Statistic from "./Statistic";
 import { BiBell, BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
-import { XAxis, ResponsiveContainer, BarChart, Bar, LabelList } from "recharts";
+import BarChart from "../Charts/BarChart";
+import { Link } from "react-router-dom";
+import {
+  CaresProperty,
+  Suggestion,
+  AddressPermutation,
+  NamePermutation,
+  TimeSeriesHistory,
+} from "../../utils/types";
+import dayjs from "dayjs";
 
-type CaresProperty = {
-  id: number;
-  source: string;
-  propertyName: string;
-  address: string;
-  city: string;
-  zipCode: number;
-  count: number;
-};
-
-type MonthHistory = {
-  month: string;
-  count: number;
-};
-
-type GetCaresPropertyOutput = {
+export type GetCaresPropertyOutput = {
   property: CaresProperty;
-  history: MonthHistory[];
+  history: {
+    month: TimeSeriesHistory[];
+    week: TimeSeriesHistory[];
+  };
+  suggestions: Suggestion[];
+  archivedSuggestions: Suggestion[];
+  addressPermutations: AddressPermutation[];
+  namePermutations: NamePermutation[];
 };
 
 interface Props {
   caresId: number | undefined;
+  dateFrom: Date | undefined;
+  dateTo: Date | undefined;
+  setSelectedProperty: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-function PropertyPopup({ caresId }: Props) {
+function PropertyPopup({
+  caresId,
+  dateFrom,
+  dateTo,
+  setSelectedProperty,
+}: Props) {
   const { data, isLoading } = useQuery({
-    queryKey: ["caresById", caresId],
+    queryKey: ["caresById", caresId, dateFrom, dateTo],
     queryFn: () => {
       const url = new URL(urls.cares.id);
       url.searchParams.append("id", caresId!.toString());
+      if (dateFrom)
+        url.searchParams.append(
+          "dateFrom",
+          dayjs(dateFrom).format("YYYY-MM-DD")
+        );
+      if (dateTo)
+        url.searchParams.append("dateTo", dayjs(dateTo).format("YYYY-MM-DD"));
       return fetch(url).then((res) =>
         res.json()
       ) as Promise<GetCaresPropertyOutput>;
@@ -59,7 +75,9 @@ function PropertyPopup({ caresId }: Props) {
         boxShadow="md"
         w="24em"
         h="24em"
-      />
+      >
+        <Skeleton w="100%" h="100%" />
+      </Flex>
     );
   }
   return (
@@ -77,29 +95,38 @@ function PropertyPopup({ caresId }: Props) {
       w="24em"
     >
       <Flex flexDir="row" justifyContent="space-between">
-        <Flex flexDir="column">
-          <Text fontWeight="bold" fontSize="lg">
+        <Flex flexDir="column" gap={1}>
+          <Text fontWeight="bold" fontSize="lg" lineHeight="1.2em">
             {data?.property.propertyName}
           </Text>
-          <Text fontSize="xs">{`${data?.property.address}, ${data?.property.city}, GA ${data?.property.zipCode}`}</Text>
+          <Text
+            fontSize="xs"
+            lineHeight="1em"
+          >{`${data?.property.address}, ${data?.property.city}, GA ${data?.property.zipCode}`}</Text>
         </Flex>
         <Flex flexDir="row" gap={1}>
-          <IconButton
-            variant="ghost"
-            size="sm"
-            icon={<Maximize2 size={18} />}
-            aria-label="Close"
-          />
+          <Link
+            to={`/cares/${data.property.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <IconButton
+              variant="ghost"
+              size="sm"
+              icon={<Maximize2 size={18} />}
+              aria-label="Open property page"
+            />
+          </Link>
           <IconButton
             variant="ghost"
             size="sm"
             icon={<CloseIcon />}
             aria-label="Close"
+            onClick={() => setSelectedProperty(undefined)}
           />
         </Flex>
       </Flex>
       <Flex flexDir="column" gap={2}>
-        {/* <Text fontWeight="medium">Also known as:</Text> */}
         <Flex flexDir="row" w="100%" justifyContent="space-between" gap={2}>
           <Statistic
             icon={<BiBuildingHouse />}
@@ -110,29 +137,17 @@ function PropertyPopup({ caresId }: Props) {
           <Statistic
             icon={<BiCalendarExclamation />}
             label="Suggested"
-            value={0}
+            value={data.suggestions.length}
           />
         </Flex>
       </Flex>
-      <Flex w="100%" h="10em" alignItems="center" textAlign="center">
-        {data.history.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              width={150}
-              height={40}
-              data={data.history}
-              margin={{ top: 20 }}
-            >
-              <XAxis
-                dataKey="month"
-                tickCount={data.history.length}
-                interval={0}
-              />
-              <Bar dataKey="count" fill="#3182CE">
-                <LabelList dataKey="count" position="top" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+      <Flex w="100%" h="12em" alignItems="center" textAlign="center">
+        {data.history.month.length > 0 ? (
+          <BarChart
+            data={data.history.month}
+            showGrid={false}
+            margin={{ top: 10, bottom: 25, left: 25, right: 0 }}
+          />
         ) : (
           <Text>No eviction data found for this CARES Act property</Text>
         )}

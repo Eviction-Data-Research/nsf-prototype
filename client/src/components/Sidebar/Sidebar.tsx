@@ -37,6 +37,9 @@ import {
 } from "chakra-dayzed-datepicker/dist/utils/commonTypes";
 import { County, FilterState } from "../../routes/root";
 import { useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { urls } from "../../utils/consts";
+import { saveAs } from "file-saver";
 
 const configs: DatepickerConfigs = {
   dateFormat: "MMMM d, yyyy",
@@ -76,6 +79,28 @@ const propsConfigs: PropsConfigs = {
   },
 };
 
+async function exportEvictionData() {
+  const url = new URL(urls.export.all);
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Accept: "text/csv",
+      "Content-Type": "application/json",
+    },
+  });
+
+  const filename = res.headers
+    ?.get("Content-Disposition")
+    ?.split(";")
+    ?.find((n) => n.includes("filename="))
+    ?.replace("filename=", "")
+    ?.trim();
+
+  const blob = await res.blob();
+
+  saveAs(blob, filename);
+}
+
 interface Props {
   filterState: FilterState;
   setFilterState: React.Dispatch<React.SetStateAction<FilterState>>;
@@ -91,6 +116,14 @@ function Sidebar({ filterState, setFilterState }: Props) {
     onOpen: onExportOpen,
     onClose: onExportClose,
   } = useDisclosure();
+
+  const { mutate: exportData } = useMutation({
+    mutationKey: ["exportEvictions"],
+    mutationFn: () => exportEvictionData(),
+    onSuccess: () => {
+      onExportClose();
+    },
+  });
 
   return (
     <Flex h="100%" flexDir="row" pos="relative" top={0} left={0} w="22em">
@@ -137,7 +170,11 @@ function Sidebar({ filterState, setFilterState }: Props) {
                   <Button ref={cancelRef} onClick={onExportClose}>
                     Cancel
                   </Button>
-                  <Button colorScheme="blue" onClick={onExportClose} ml={3}>
+                  <Button
+                    colorScheme="blue"
+                    onClick={() => exportData()}
+                    ml={3}
+                  >
                     Confirm
                   </Button>
                 </AlertDialogFooter>
@@ -147,26 +184,27 @@ function Sidebar({ filterState, setFilterState }: Props) {
         </Flex>
         <CheckboxGroup
           colorScheme="blue"
-          defaultValue={["fulton", "dekalb"]}
-          onChange={(value) =>
-            setFilterState({ ...filterState, counties: value as County[] })
-          }
+          defaultValue={["Fulton", "DeKalb"]}
+          onChange={(value) => {
+            if (value.length === 0) return;
+            setFilterState({ ...filterState, counties: value as County[] });
+          }}
           value={filterState.counties}
         >
           <Stack spacing={1} direction="column">
-            <Checkbox size="md" value="fulton">
+            <Checkbox size="md" value="Fulton">
               Fulton County
             </Checkbox>
-            <Checkbox size="md" value="dekalb">
+            <Checkbox size="md" value="DeKalb">
               DeKalb County
             </Checkbox>
-            <Checkbox size="md" value="clayton" disabled>
+            <Checkbox size="md" value="Clayton" disabled>
               Clayton County
             </Checkbox>
-            <Checkbox size="md" value="cobb" disabled>
+            <Checkbox size="md" value="Cobb" disabled>
               Cobb County
             </Checkbox>
-            <Checkbox size="md" value="gwinnett" disabled>
+            <Checkbox size="md" value="Gwinnett" disabled>
               Gwinnett County
             </Checkbox>
           </Stack>
@@ -240,7 +278,9 @@ function Sidebar({ filterState, setFilterState }: Props) {
           </InputGroup>
         </Flex>
         <Flex flexDir="column" gap={2}>
-          <Text fontWeight="medium">Buildings with count over</Text>
+          <Text fontWeight="medium">
+            Buildings with eviction count at least
+          </Text>
           <NumberInput
             size="md"
             defaultValue={0}

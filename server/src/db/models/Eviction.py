@@ -1,8 +1,9 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Text, Date, Double, Integer
-from geoalchemy2 import Geography 
+from sqlalchemy import Column, String, Text, Date, Double, Integer, Table
+from geoalchemy2 import Geography
 
 Base = declarative_base()
+
 
 class Eviction(Base):
     __tablename__ = 'evictions'
@@ -15,20 +16,39 @@ class Eviction(Base):
     defendantCity1 = Column(Text)
     standardizedAddress = Column(String(255))
     location = Column(Geography(geometry_type='POINT', srid=4326))
-    closestCaresDistance = Column(Double)
-    caresId = Column(Integer)
+
+
+# class TempEviction(Base):
+#     __tablename__ = 'new-evictions'
+#     __table_args__ = (
+#         CreateTemporaryTable(
+#             {'prefixes': ['TEMPORARY']},
+#             on_commit='DROP'
+#         ),
+#     )
+#     caseID = Column(String(50), primary_key=True)
+#     fileDate = Column(Date)
+#     plaintiff = Column(Text)
+#     plaintiffAddress = Column(Text)
+#     plaintiffCity = Column(String(50))
+#     defendantAddress1 = Column(Text)
+#     defendantCity1 = Column(Text)
+#     standardizedAddress = Column(String(255))
+#     location = Column(Geography(geometry_type='POINT', srid=4326))
+#     closestCaresDistance = Column(Double)
 
 class TempEviction(Base):
-    __tablename__ = 'new-evictions'
-    __table_args__ = {'prefixes': ['TEMPORARY']}
-    caseID = Column(String(50), primary_key=True)
-    fileDate = Column(Date)
-    plaintiff = Column(Text)
-    plaintiffAddress = Column(Text)
-    plaintiffCity = Column(String(50))
-    defendantAddress1 = Column(Text)
-    defendantCity1 = Column(Text)
-    standardizedAddress = Column(String(255))
-    location = Column(Geography(geometry_type='POINT', srid=4326))
-    closestCaresDistance = Column(Double)
-    caresId = Column(Integer)
+    __table__ = Table(
+        'new-evictions',
+        Base.metadata,
+        Column('caseID', String(50), primary_key=True),
+        Column('fileDate', Date),
+        Column('plaintiff', Text),
+        Column('plaintiffAddress', Text),
+        Column('plaintiffCity', String(50)),
+        Column('defendantAddress1', Text),
+        Column('defendantCity1', Text),
+        Column('standardizedAddress', String(255)),
+        Column('location', Geography(geometry_type='POINT', srid=4326)),
+        Column('closestCaresDistance', Double)
+    )

@@ -3,7 +3,7 @@ import { Outlet, useOutletContext } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useState } from "react";
 
-export type PopupType = "about" | "chart" | "property";
+export type PopupType = "about" | "chart" | "property" | "suggestions";
 type PopupState = [
   openPopup: PopupType | undefined,
   setOpenPopup: React.Dispatch<React.SetStateAction<PopupType | undefined>>

@@ -1,9 +1,9 @@
-from typing import List
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Text
-from geoalchemy2 import Geography 
+from geoalchemy2 import Geography
 
 Base = declarative_base()
+
 
 class Cares(Base):
     __tablename__ = 'cares'

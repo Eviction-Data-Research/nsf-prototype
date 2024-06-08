@@ -1,5 +1,4 @@
 import {
-  useDisclosure,
   Button,
   Modal,
   ModalOverlay,
@@ -15,7 +14,6 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { DownloadIcon } from "lucide-react";
 import { useState } from "react";
 import { Column, columnLabels, urls } from "../../utils/consts";
 
@@ -31,8 +29,12 @@ const uploadStageButtonTextMap: Record<UploadStage, string> = {
 
 type SelectedFilters = Record<string, Column>;
 
-function UploadModal() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+function UploadModal({ isOpen, onClose }: Props) {
   const [uploadStage, setUploadStage] = useState(UploadStage.PreUpload);
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({});
 
@@ -108,103 +110,89 @@ function UploadModal() {
   };
 
   return (
-    <>
-      <Button
-        colorScheme="teal"
-        zIndex={2}
-        position="absolute"
-        bottom={5}
-        left={5}
-        leftIcon={<DownloadIcon size={20} />}
-        onClick={onOpen}
-      >
-        Upload week data
-      </Button>
-
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        size="2xl"
-        closeOnOverlayClick={false}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Upload week data</ModalHeader>
-          <form onSubmit={submitHandlerMap[uploadStage]}>
-            <ModalBody display="flex" flexDirection="column" gap={4}>
-              <Box>
-                <input name="file" type="file" accept=".csv" />
-              </Box>
-              {uploadStage === UploadStage.ColAssignment && (
-                <Flex flexDir="column" h={400} gap={2}>
-                  <Text fontSize="lg" fontWeight="semibold">
-                    Assign columns
-                  </Text>
-                  <Stack h="100%" overflowY="scroll">
-                    {Object.entries(preUploadData).map(([k, _v], i) => {
-                      return (
-                        <Flex
-                          flexDir="row"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          bgColor={i % 2 === 0 ? "white" : "gray.100"}
-                          p={1}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      closeOnOverlayClick={false}
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Upload week data</ModalHeader>
+        <form onSubmit={submitHandlerMap[uploadStage]}>
+          <ModalBody display="flex" flexDirection="column" gap={4}>
+            <Box>
+              <input name="file" type="file" accept=".csv" />
+            </Box>
+            {uploadStage === UploadStage.ColAssignment && (
+              <Flex flexDir="column" h={400} gap={2}>
+                <Text fontSize="lg" fontWeight="semibold">
+                  Assign columns
+                </Text>
+                <Stack h="100%" overflowY="scroll">
+                  {Object.entries(preUploadData).map(([k, _v], i) => {
+                    return (
+                      <Flex
+                        flexDir="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        bgColor={i % 2 === 0 ? "white" : "gray.100"}
+                        p={1}
+                      >
+                        <Text>{k}</Text>
+                        <Select
+                          size="sm"
+                          value={selectedFilters[k] ?? "Ignore"}
+                          w="40%"
+                          placeholder="Ignore"
+                          onChange={(e) => {
+                            setSelectedFilters({
+                              ...selectedFilters,
+                              [k]: e.target.value as Column,
+                            });
+                          }}
                         >
-                          <Text>{k}</Text>
-                          <Select
-                            size="sm"
-                            value={selectedFilters[k] ?? "Ignore"}
-                            w="40%"
-                            placeholder="Ignore"
-                            onChange={(e) => {
-                              setSelectedFilters({
-                                ...selectedFilters,
-                                [k]: e.target.value as Column,
-                              });
-                            }}
-                          >
-                            {Object.values(Column)
-                              .filter(
-                                (col) =>
-                                  col === selectedFilters[k] ||
-                                  !selectedFiltersValues.includes(col)
-                              )
-                              .map((col) => (
-                                <option value={col}>{columnLabels[col]}</option>
-                              ))}
-                          </Select>
-                        </Flex>
-                      );
-                    })}
-                  </Stack>
-                </Flex>
-              )}
-            </ModalBody>
+                          {Object.values(Column)
+                            .filter(
+                              (col) =>
+                                col === selectedFilters[k] ||
+                                !selectedFiltersValues.includes(col)
+                            )
+                            .map((col) => (
+                              <option value={col}>{columnLabels[col]}</option>
+                            ))}
+                        </Select>
+                      </Flex>
+                    );
+                  })}
+                </Stack>
+              </Flex>
+            )}
+          </ModalBody>
 
-            <ModalFooter gap={2}>
-              <Button
-                variant="ghost"
-                colorScheme="red"
-                onClick={() => {
-                  setUploadStage(UploadStage.PreUpload);
-                  onClose();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                colorScheme="teal"
-                mr={3}
-                isLoading={preUploadIsPending}
-              >
-                {uploadStageButtonTextMap[uploadStage]}
-              </Button>
-            </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
-    </>
+          <ModalFooter gap={2}>
+            <Button
+              variant="ghost"
+              colorScheme="red"
+              onClick={() => {
+                setUploadStage(UploadStage.PreUpload);
+                onClose();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              colorScheme="blue"
+              mr={3}
+              isLoading={preUploadIsPending}
+            >
+              {uploadStageButtonTextMap[uploadStage]}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   );
 }
 

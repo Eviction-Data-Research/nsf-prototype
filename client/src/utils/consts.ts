@@ -7,7 +7,23 @@ export const urls = {
   },
   cares: {
     all: `${backendUrl}/cares`,
-    id: `${backendUrl}/cares/single`,
+    id: `${backendUrl}/cares/property`,
+    trend: `${backendUrl}/cares/property/trend`,
+  },
+  suggestion: {
+    all: `${backendUrl}/suggestion`,
+    external: `${backendUrl}/suggestion/map`,
+    confirm: `${backendUrl}/suggestion/confirm`,
+    reject: `${backendUrl}/suggestion/reject`,
+    undo: `${backendUrl}/suggestion/undo`,
+  },
+  export: {
+    all: `${backendUrl}/export/all`,
+    id: `${backendUrl}/export/property`,
+    addresses: `${backendUrl}/export/property/addresses`,
+  },
+  eviction: {
+    chart: `${backendUrl}/eviction/chart`,
   },
 };
 
@@ -30,3 +46,5 @@ export const columnLabels: Record<Column, string> = {
   [Column.DefendantAddress]: "Defendant address",
   [Column.DefendantCity]: "Defendant city",
 };
+
+export const START_DATE = "2019-01-01";

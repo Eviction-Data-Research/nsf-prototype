@@ -8,7 +8,7 @@ REQUIRED_COLS = [
     'defendantCity1',
 ]
 
-MAX_BATCH_SIZE = 10000
+MAX_BATCH_SIZE = 5000
 
 GEOCODING_API_URL = 'https://geocoding.geo.census.gov/geocoder/locations/addressbatch'
 
