@@ -2,7 +2,7 @@ import datetime
 from typing import List
 
 import pandas as pd
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from ..utils.consts import PROXIMITY_RADIUS

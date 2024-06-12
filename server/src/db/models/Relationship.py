@@ -1,6 +1,6 @@
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Table
+from sqlalchemy import Column, Integer, String, Table, UniqueConstraint
 
 Base = declarative_base()
 
@@ -10,11 +10,15 @@ RelationshipType = ENUM(*RELATIONSHIP_TYPE, name="relationship_type", create_typ
 
 
 class Relationship(Base):
-    __tablename__ = 'eviction-cares'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(RelationshipType)
-    evictionId = Column(String(50), nullable=False)
-    caresId = Column(Integer, nullable=False)
+    __table__ = Table(
+        'eviction-cares',
+        Base.metadata,
+        Column('id', Integer, primary_key=True, autoincrement=True),
+        Column('type', RelationshipType),
+        Column('evictionId', String(50), nullable=False),
+        Column('caresId', Integer, nullable=False),
+        UniqueConstraint('evictionId', 'caresId')
+    )
 
 
 class TempRelationship(Base):
@@ -25,6 +29,7 @@ class TempRelationship(Base):
         Column('type', RelationshipType, nullable=False),
         Column('evictionId', String(50), nullable=False),
         Column('caresId', Integer, nullable=False),
+        UniqueConstraint('evictionId', 'caresId'),
         prefixes=['TEMPORARY'],
         postgresql_on_commit='DROP',
     )

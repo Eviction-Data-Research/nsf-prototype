@@ -88,9 +88,6 @@ function NewSuggestions({
           caseID: suggestion.caseID,
         }),
       }),
-    // onSuccess: (_, variables, __) => {
-    //   queryClient.invalidateQueries({ queryKey: ["cares", variables.id] });
-    // },
   });
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -399,45 +396,6 @@ function NewSuggestions({
                     </Stack>
                   </Collapse>
                 </>
-                {/* <h2>
-                  <AccordionButton
-                    borderColor="gray.400"
-                    borderRadius={6}
-                    borderWidth={1}
-                  >
-                    <Flex
-                      flexDir="row"
-                      justifyContent="space-between"
-                      w="100%"
-                      pr={2}
-                      textAlign="left"
-                      gap={4}
-                      alignItems="center"
-                    >
-                      <Flex justifyContent="center" alignItems="center">
-                        <Text
-                          bgColor="red.500"
-                          textColor="white"
-                          fontWeight="bold"
-                          fontSize={14}
-                          lineHeight={1}
-                          px={1.5}
-                          py={1.5}
-                          borderRadius={2}
-                        >
-                          {row.suggestions.length}
-                        </Text>
-                      </Flex>
-                    </Flex>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2> */}
-                {/* <AccordionPanel>
-                        {isExpanded &&
-                      </AccordionPanel>
-                    </> */}
-                {/* ) */}
-                {/* }} */}
               </Box>
             );
           })}

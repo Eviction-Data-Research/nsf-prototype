@@ -6,6 +6,25 @@ from sqlalchemy.orm import Session
 from src.controllers.cares import _extract_lon_lat
 
 
+def get_count_suggestions(db: Session):
+    query = f"""
+        SELECT COUNT(e."caseID") AS count 
+        FROM evictions AS e
+                 LEFT JOIN "eviction-cares" AS r ON e."caseID" = r."evictionId"
+                 CROSS JOIN LATERAL (
+            SELECT c.id, c."propertyName", e.location <-> c.location AS dist FROM cares AS c ORDER BY dist LIMIT 1
+            ) AS p
+        WHERE e.location IS NOT NULL
+          AND (r.id IS NULL
+            OR r.type = 'MANUAL_REJECT')
+          AND dist <= 160;
+    """
+
+    count_suggestions = pd.read_sql(query, db.connection())
+
+    return count_suggestions['count'].iloc[0].item()
+
+
 # To avoid duplicate eviction records appearing in the suggestions popup, each suggestion candidate (eviction record) is
 #   suggested to its closest cares property
 def retrieve_all_suggestions(db: Session):
@@ -23,10 +42,15 @@ def retrieve_all_suggestions(db: Session):
         WHERE e.location IS NOT NULL
           AND (r.id IS NULL
             OR r.type = 'MANUAL_REJECT')
-          AND dist <= 160
+          AND dist <= 160;
     """
 
     suggestions = pd.read_sql(query, db.connection())
+
+    if suggestions.shape[0] == 0:
+        return [], 0
+
+    # TODO: Speedup using json_build_object
     cares_grouped_suggestions = suggestions.groupby(['id', 'propertyName'])[
         ['caseID', 'address', 'verification']].apply(
         lambda g: g.to_dict(orient='records')).reset_index(name='suggestions')
@@ -42,10 +66,12 @@ def retrieve_all_archived_suggestions(db: Session):
                    WHEN r.type = 'MANUAL_REJECT' THEN 1
                    END               AS verification,
                e."caseID",
-               e."defendantAddress1" AS address
+               e."defendantAddress1" AS address,
+               c."propertyName" AS "propertyName"
         FROM "eviction-cares" AS r
                  LEFT JOIN evictions AS e ON r."evictionId" = e."caseID"
-        WHERE r.type != 'ADDRESS_MATCH'
+                 LEFT JOIN cares AS c ON r."caresId" = c.id
+        WHERE r.type IN ('MANUAL_MATCH', 'MANUAL_REJECT')
         ORDER BY r.id DESC
     """
 
@@ -54,7 +80,12 @@ def retrieve_all_archived_suggestions(db: Session):
     if archived_suggestions.shape[0] == 0:
         return []
 
-    return archived_suggestions.to_dict(orient='records')
+    # TODO: Speedup possible here
+    cares_grouped_archived_suggestions = archived_suggestions.groupby(['id', 'propertyName'])[
+        ['caseID', 'address', 'verification']].apply(lambda g: g.to_dict(orient='records')).reset_index(
+        name='suggestions')
+
+    return cares_grouped_archived_suggestions.to_dict(orient='records')
 
 
 def get_suggestion_locations(db: Session, caresId: int, caseID: str):

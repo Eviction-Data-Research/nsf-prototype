@@ -1,16 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, Form, File
-from typing_extensions import Annotated
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-import pandas as pd
-import os
-from io import BytesIO
 import json
-from ..db.db import SessionLocal
-from ..utils.consts import REQUIRED_COLS
-from ..controllers.eviction import transform_eviction_data, get_matches
 import logging
-from ..db.models.Eviction import Eviction
+from io import BytesIO
+
+import pandas as pd
+from fastapi import APIRouter, Depends, UploadFile, Form
+from sqlalchemy.orm import Session
+from typing_extensions import Annotated
+
+from ..controllers.eviction import transform_eviction_data, get_matches
 from ..utils.db import get_db
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)

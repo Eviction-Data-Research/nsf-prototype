@@ -2,7 +2,7 @@ import datetime
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 

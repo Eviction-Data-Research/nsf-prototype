@@ -63,13 +63,16 @@ function UploadModal({ isOpen, onClose }: Props) {
   const {
     // data: colAssignData,
     mutateAsync: colAssignMutate,
-    // isPending: colAssignIsPending,
+    isPending: colAssignIsPending,
   } = useMutation({
     mutationFn: (formData: FormData) =>
       fetch(urls.upload.confirm, {
         method: "POST",
         body: formData,
       }).then((res) => res.json()),
+    onSuccess: () => {
+      onClose();
+    },
   });
 
   async function handlePreUploadSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -185,7 +188,7 @@ function UploadModal({ isOpen, onClose }: Props) {
               type="submit"
               colorScheme="blue"
               mr={3}
-              isLoading={preUploadIsPending}
+              isLoading={preUploadIsPending || colAssignIsPending}
             >
               {uploadStageButtonTextMap[uploadStage]}
             </Button>

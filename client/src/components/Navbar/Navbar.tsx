@@ -17,6 +17,8 @@ import { PopupType } from "./NavbarWrapper";
 import UploadModal from "../UploadModal/UploadModal";
 import { CloudUpload, FolderDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { urls } from "../../utils/consts";
 
 interface Props {
   openPopup: PopupType | undefined;
@@ -29,6 +31,11 @@ function Navbar({ openPopup, setOpenPopup }: Props) {
     onToggle: onUploadModalToggle,
     onClose: onUploadModalClose,
   } = useDisclosure();
+
+  const { data: numSuggestions } = useQuery({
+    queryKey: ["suggestion"],
+    queryFn: () => fetch(urls.suggestion.count).then((res) => res.json()),
+  });
 
   return (
     <>
@@ -102,15 +109,17 @@ function Navbar({ openPopup, setOpenPopup }: Props) {
             _hover={{ bgColor: "blue.600" }}
             textColor="white"
             rightIcon={
-              <Box
-                bgColor="red.500"
-                textColor="white"
-                py={0.5}
-                px={1}
-                borderRadius={2}
-              >
-                80
-              </Box>
+              numSuggestions !== undefined ? (
+                <Box
+                  bgColor="red.500"
+                  textColor="white"
+                  py={0.5}
+                  px={1}
+                  borderRadius={2}
+                >
+                  {numSuggestions.count}
+                </Box>
+              ) : undefined
             }
             onClick={() =>
               openPopup === "suggestions"

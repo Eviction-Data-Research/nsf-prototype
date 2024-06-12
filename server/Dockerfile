@@ -1,11 +1,13 @@
-FROM continuumio/miniconda
+FROM python:3.10
 
 WORKDIR /app
 
-COPY . .
+COPY ./requirements.txt /app/requirements.txt
 
-RUN conda env create -f nsf-prototype-server.yml
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-EXPOSE 8000 
+COPY . /app
 
-CMD ["conda", "run", "-n", "nsf-prototype-server", "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8443
+
+CMD ["uvicorn", "main:app", "--workers", "5", "--host", "0.0.0.0", "--port", "8443"]

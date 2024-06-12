@@ -25,7 +25,7 @@ export type CaresPropertySuggestion = {
 
 type GetSuggestionsOutput = {
   suggestions: CaresPropertySuggestion[];
-  archivedSuggestions: Suggestion[];
+  archivedSuggestions: CaresPropertySuggestion[];
   numSuggestions: number;
 };
 
@@ -96,6 +96,10 @@ function SuggestionsPopup() {
             type: ActionType.Init,
             suggestions: val.suggestions,
           });
+          archivedSuggestionsDispatch({
+            type: ActionType.Init,
+            suggestions: val.archivedSuggestions,
+          });
         });
         return parsed;
       });
@@ -107,18 +111,15 @@ function SuggestionsPopup() {
     reducer,
     data?.suggestions ?? []
   );
-  // const [
-  //   archivedSuggestionsWithVerificationContext,
-  //   archivedSuggestionsDispatch,
-  // ] = useReducer(reducer, archivedSuggestions);
+
+  const [
+    archivedSuggestionsWithVerificationContext,
+    archivedSuggestionsDispatch,
+  ] = useReducer(reducer, data?.archivedSuggestions ?? []);
 
   const [mostRecentSuggestionFocus, setMostRecentSuggestionFocus] = useState<
     string | null
   >(null);
-
-  // if (data === undefined || isLoading) {
-  //   return <Spinner />;
-  // }
 
   return (
     <Flex
@@ -190,7 +191,20 @@ function SuggestionsPopup() {
             )}
           </TabPanel>
           <TabPanel>
-            <ArchivedSuggestions />
+            {data ? (
+              <ArchivedSuggestions
+                properties={archivedSuggestionsWithVerificationContext}
+                mostRecentSuggestionFocus={mostRecentSuggestionFocus}
+                setMostRecentSuggestionFocus={setMostRecentSuggestionFocus}
+                dispatch={archivedSuggestionsDispatch}
+              />
+            ) : (
+              <Stack spacing={2}>
+                {Array.from(Array(6)).map((_, i) => (
+                  <Skeleton key={i} w="100%" h="51px" />
+                ))}
+              </Stack>
+            )}
           </TabPanel>
         </TabPanels>
       </Tabs>

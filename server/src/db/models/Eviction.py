@@ -18,25 +18,6 @@ class Eviction(Base):
     location = Column(Geography(geometry_type='POINT', srid=4326))
 
 
-# class TempEviction(Base):
-#     __tablename__ = 'new-evictions'
-#     __table_args__ = (
-#         CreateTemporaryTable(
-#             {'prefixes': ['TEMPORARY']},
-#             on_commit='DROP'
-#         ),
-#     )
-#     caseID = Column(String(50), primary_key=True)
-#     fileDate = Column(Date)
-#     plaintiff = Column(Text)
-#     plaintiffAddress = Column(Text)
-#     plaintiffCity = Column(String(50))
-#     defendantAddress1 = Column(Text)
-#     defendantCity1 = Column(Text)
-#     standardizedAddress = Column(String(255))
-#     location = Column(Geography(geometry_type='POINT', srid=4326))
-#     closestCaresDistance = Column(Double)
-
 class TempEviction(Base):
     __table__ = Table(
         'new-evictions',
@@ -50,5 +31,7 @@ class TempEviction(Base):
         Column('defendantCity1', Text),
         Column('standardizedAddress', String(255)),
         Column('location', Geography(geometry_type='POINT', srid=4326)),
-        Column('closestCaresDistance', Double)
+        Column('closestCaresDistance', Double),
+        prefixes=['TEMPORARY'],
+        postgresql_on_commit='DROP'
     )

@@ -12,6 +12,7 @@ export const urls = {
   },
   suggestion: {
     all: `${backendUrl}/suggestion`,
+    count: `${backendUrl}/suggestion/count`,
     external: `${backendUrl}/suggestion/map`,
     confirm: `${backendUrl}/suggestion/confirm`,
     reject: `${backendUrl}/suggestion/reject`,

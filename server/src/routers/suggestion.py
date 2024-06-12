@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from ..controllers.suggestion import get_suggestion_locations, confirm_suggestion, reject_suggestion, undo_suggestion, \
-    retrieve_all_suggestions, retrieve_all_archived_suggestions
+    retrieve_all_suggestions, retrieve_all_archived_suggestions, get_count_suggestions
 from ..utils.db import get_db
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -26,6 +26,14 @@ async def get_all_suggestions(db: Session = Depends(get_db)):
         'suggestions': all_suggestions,
         'archivedSuggestions': all_archived_suggestions,
         'numSuggestions': num_suggestions
+    }
+
+
+@router.get("/count")
+async def get_num_all_suggestions(db: Session = Depends(get_db)):
+    count = get_count_suggestions(db)
+    return {
+        'count': count
     }
 
 

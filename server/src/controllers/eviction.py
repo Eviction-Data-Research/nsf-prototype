@@ -1,7 +1,6 @@
 import datetime
 from typing import List
 
-import usaddress
 import asyncio
 import logging
 from io import StringIO
@@ -2044,7 +2043,8 @@ def _write_temp_eviction_records(db: Session):
 async def get_matches(db: Session, df: pd.DataFrame):
     TempEviction.__table__.create(db.connection(), checkfirst=True)
     TempRelationship.__table__.create(db.connection(), checkfirst=True)
-    db.execute(insert(TempEviction), df.to_dict('records'))
+
+    db.execute(insert(TempEviction), df.to_dict(orient='records'))
 
     exact_matches = _get_exact_address_matches(db)
     await _get_proximity_matches(db)
