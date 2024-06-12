@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
 
-EXPOSE 443
+EXPOSE 8443
 
-CMD ["uvicorn", "src.main:app", "--workers", "5", "--host", "0.0.0.0", "--port", "443"]
+CMD ["uvicorn", "src.main:app", "--workers", "5", "--host", "0.0.0.0", "--port", "8443"]

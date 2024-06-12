@@ -26,9 +26,9 @@ services:
     volumes: 
       - ./server:/app
     ports:
-      - 443:443
+      - 8443:8443
     healthcheck:
-      test: wget -qO- --no-verbose --tries=1 server:443/health &> /dev/null || exit 1
+      test: wget -qO- --no-verbose --tries=1 server:8443/health &> /dev/null || exit 1
       interval: 300s
       timeout: 5s
       start_period: 60s
