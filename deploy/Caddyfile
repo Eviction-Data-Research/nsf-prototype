@@ -1,0 +1,3 @@
+nsf.katsukichan.me {
+    reverse_proxy server:8443
+}

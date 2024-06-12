@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  caddy:
+    image: caddy:2.7-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile
+
   # client:
   #   container_name: nsf-prototype-client 
   #   build: 
