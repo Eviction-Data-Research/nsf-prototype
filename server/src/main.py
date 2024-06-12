@@ -14,17 +14,17 @@ origins = [
     "*"
 ]
 
+#
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     with Session(bind=engine) as session:  # Synchronous session context
+#         Eviction.__table__.create(session.bind, checkfirst=True)
+#         Relationship.__table__.create(session.bind, checkfirst=True)
+#
+#     yield
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    with Session(bind=engine) as session:  # Synchronous session context
-        Eviction.__table__.create(session.bind, checkfirst=True)
-        Relationship.__table__.create(session.bind, checkfirst=True)
 
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.include_router(upload.router)
 app.include_router(cares.router)

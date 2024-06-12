@@ -24,14 +24,14 @@ CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
 
 
 --
--- Name: relationship_type; Type: TYPE; Schema: public; Owner: postgres
+-- Name: relationship_type; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.relationship_type AS ENUM (
@@ -41,10 +41,8 @@ CREATE TYPE public.relationship_type AS ENUM (
 );
 
 
-ALTER TYPE public.relationship_type OWNER TO postgres;
-
 --
--- Name: relationshiptype; Type: TYPE; Schema: public; Owner: postgres
+-- Name: relationshiptype; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.relationshiptype AS ENUM (
@@ -54,14 +52,12 @@ CREATE TYPE public.relationshiptype AS ENUM (
 );
 
 
-ALTER TYPE public.relationshiptype OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: cares; Type: TABLE; Schema: public; Owner: postgres
+-- Name: cares; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.cares (
@@ -76,10 +72,8 @@ CREATE TABLE public.cares (
 );
 
 
-ALTER TABLE public.cares OWNER TO postgres;
-
 --
--- Name: cares_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cares_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.cares_id_seq
@@ -91,17 +85,15 @@ CREATE SEQUENCE public.cares_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cares_id_seq OWNER TO postgres;
-
 --
--- Name: cares_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: cares_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.cares_id_seq OWNED BY public.cares.id;
 
 
 --
--- Name: counties; Type: TABLE; Schema: public; Owner: katsukichan
+-- Name: counties; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.counties (
@@ -129,17 +121,71 @@ CREATE TABLE public.counties (
 );
 
 
-ALTER TABLE public.counties OWNER TO katsukichan;
+--
+-- Name: eviction-cares; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."eviction-cares" (
+    id integer NOT NULL,
+    type public.relationship_type,
+    "evictionId" character varying(50) NOT NULL,
+    "caresId" integer NOT NULL
+);
+
 
 --
--- Name: cares id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: eviction-cares_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."eviction-cares_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: eviction-cares_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."eviction-cares_id_seq" OWNED BY public."eviction-cares".id;
+
+
+--
+-- Name: evictions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.evictions (
+    "caseID" character varying(50) NOT NULL,
+    "fileDate" date,
+    plaintiff text,
+    "plaintiffAddress" text,
+    "plaintiffCity" character varying(50),
+    "defendantAddress1" text,
+    "defendantCity1" text,
+    "standardizedAddress" character varying(255),
+    location public.geography(Point,4326)
+);
+
+
+--
+-- Name: cares id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cares ALTER COLUMN id SET DEFAULT nextval('public.cares_id_seq'::regclass);
 
 
 --
--- Data for Name: cares; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: eviction-cares id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."eviction-cares" ALTER COLUMN id SET DEFAULT nextval('public."eviction-cares_id_seq"'::regclass);
+
+
+--
+-- Data for Name: cares; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.cares (id, source, "propertyName", address, "standardizedAddress", city, "zipCode", location) FROM stdin;
@@ -4427,7 +4473,7 @@ COPY public.cares (id, source, "propertyName", address, "standardizedAddress", c
 
 
 --
--- Data for Name: counties; Type: TABLE DATA; Schema: public; Owner: katsukichan
+-- Data for Name: counties; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.counties (name10, geom, objectid, statefp10, countyfp10, geoid10, namelsad10, totpop10, wfd, rdc_aaa, mngwpd, mpo, msa, f1hr_na, f8hr_na, reg_comm, acres, sq_miles, label, globalid, last_edite) FROM stdin;
@@ -4463,7 +4509,23 @@ Paulding	0106000020E6100000010000000103000000010000000D0400007C86EE906C3955C0596
 
 
 --
--- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: eviction-cares; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public."eviction-cares" (id, type, "evictionId", "caresId") FROM stdin;
+\.
+
+
+--
+-- Data for Name: evictions; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.evictions ("caseID", "fileDate", plaintiff, "plaintiffAddress", "plaintiffCity", "defendantAddress1", "defendantCity1", "standardizedAddress", location) FROM stdin;
+\.
+
+
+--
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
@@ -4471,14 +4533,21 @@ COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM
 
 
 --
--- Name: cares_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cares_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.cares_id_seq', 1, false);
 
 
 --
--- Name: cares cares_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: eviction-cares_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."eviction-cares_id_seq"', 1, false);
+
+
+--
+-- Name: cares cares_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cares
@@ -4486,7 +4555,7 @@ ALTER TABLE ONLY public.cares
 
 
 --
--- Name: counties counties_pkey; Type: CONSTRAINT; Schema: public; Owner: katsukichan
+-- Name: counties counties_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.counties
@@ -4494,14 +4563,45 @@ ALTER TABLE ONLY public.counties
 
 
 --
--- Name: idx_cares_location; Type: INDEX; Schema: public; Owner: postgres
+-- Name: eviction-cares eviction-cares_evictionId_caresId_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."eviction-cares"
+    ADD CONSTRAINT "eviction-cares_evictionId_caresId_key" UNIQUE ("evictionId", "caresId");
+
+
+--
+-- Name: eviction-cares eviction-cares_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."eviction-cares"
+    ADD CONSTRAINT "eviction-cares_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: evictions evictions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.evictions
+    ADD CONSTRAINT evictions_pkey PRIMARY KEY ("caseID");
+
+
+--
+-- Name: idx_cares_location; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_cares_location ON public.cares USING gist (location);
 
 
 --
--- Name: sidx_counties_geom; Type: INDEX; Schema: public; Owner: katsukichan
+-- Name: idx_evictions_location; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_evictions_location ON public.evictions USING gist (location);
+
+
+--
+-- Name: sidx_counties_geom; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX sidx_counties_geom ON public.counties USING gist (geom);

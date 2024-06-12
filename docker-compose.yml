@@ -1,38 +1,41 @@
 version: "3.8"
 
 services:
-  client:
-    container_name: nsf-prototype-client 
-    build: 
-      context: ./client
-      dockerfile: Dockerfile
-    volumes:
-      - ./client:/app
-    ports:
-      - "8080:8080"
-    depends_on:
-      server:
-        condition: service_healthy
-    networks:
-      - nsf-prototype
+  # client:
+  #   container_name: nsf-prototype-client 
+  #   build: 
+  #     context: ./client
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./client:/app
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     server:
+  #       condition: service_healthy
+  #   networks:
+  #     - nsf-prototype
 
   server:
     container_name: nsf-prototype-server 
     build:
       context: ./server
       dockerfile: Dockerfile
+    environment:
+      - DB_URL=postgresql://user:password@db/nsf-prototype
     volumes: 
       - ./server:/app
     ports:
-      - "8443:8443"
+      - 8443:8443
     healthcheck:
-      test: wget -qO- --no-verbose --tries=1 server:8000/health &> /dev/null || exit 1
-      interval: 10s
+      test: wget -qO- --no-verbose --tries=1 server:8443/health &> /dev/null || exit 1
+      interval: 300s
       timeout: 5s
-      start_period: 20s
+      start_period: 60s
       retries: 1
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - nsf-prototype
   
@@ -46,10 +49,17 @@ services:
       - POSTGRES_DB=nsf-prototype
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
+    command: postgres -c listen_addresses='*'
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - ./db/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d nsf-prototype"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 120s  
     networks:
       - nsf-prototype
 

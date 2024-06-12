@@ -27,6 +27,7 @@ orjson==3.10.4
 packaging==24.1
 pandas==2.2.2
 probableparsing==0.0.1
+psycopg2==2.9.9
 pydantic==2.7.3
 pydantic_core==2.18.4
 Pygments==2.18.0
