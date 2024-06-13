@@ -25,8 +25,8 @@ services:
       - DB_URL=postgresql://user:password@db/nsf-prototype
     volumes: 
       - ./server:/app
-    # ports:
-    #   - 8443:8443
+    ports:
+      - 8443:8443
     healthcheck:
       test: wget -qO- --no-verbose --tries=1 server:8443/health &> /dev/null || exit 1
       interval: 300s
