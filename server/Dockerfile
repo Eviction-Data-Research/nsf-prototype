@@ -10,4 +10,4 @@ COPY . /app
 
 EXPOSE 8443
 
-CMD ["uvicorn", "src.main:app", "--workers", "5", "--host", "0.0.0.0", "--port", "8443"]
+CMD ["uvicorn", "src.main:app", "--workers", "5", "--host", "0.0.0.0", "--port", "8443", "--ssl-keyfile", "./key.pem", "--ssl-certfile", "./cert.pem"]

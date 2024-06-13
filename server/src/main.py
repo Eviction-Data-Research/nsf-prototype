@@ -9,6 +9,8 @@ from src.db.models.Eviction import Eviction
 from src.db.models.Relationship import Relationship
 from src.routers import upload, cares, suggestion, export, eviction
 
+import ssl
+
 origins = [
     "http://localhost:8080",
     "*"
@@ -25,6 +27,9 @@ origins = [
 
 
 app = FastAPI()
+
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain(certfile='./cert.pem', keyfile='./key.pem')
 
 app.include_router(upload.router)
 app.include_router(cares.router)
