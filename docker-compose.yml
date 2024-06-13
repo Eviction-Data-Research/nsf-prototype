@@ -9,6 +9,7 @@ services:
       - 2096:2096
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile
+      - ./deploy/caddy:$HOME/.local/share/caddy
 
   # client:
   #   container_name: nsf-prototype-client 
