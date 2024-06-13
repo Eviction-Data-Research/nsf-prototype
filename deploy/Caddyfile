@@ -1,6 +1,3 @@
-nsf.katsukichan.me {
-    reverse_proxy server:8443
-}
-nsf.katsukichan.me:2096 {
+:2096 {
     reverse_proxy server:8443
 }
