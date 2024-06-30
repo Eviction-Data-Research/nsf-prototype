@@ -1,0 +1,31 @@
+
+version: "3.8"
+
+services:
+  db:
+    container_name: nsf-prototype-db
+    build:
+      context: ./db
+      dockerfile: Dockerfile 
+    restart: always
+    environment:
+      - POSTGRES_DB=nsf-prototype
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    command: postgres -c listen_addresses='*'
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d nsf-prototype"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 120s  
+    networks:
+      - nsf-prototype
+
+networks:
+  nsf-prototype:
+    driver: bridge
