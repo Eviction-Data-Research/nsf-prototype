@@ -108,6 +108,10 @@ It is recommended that you manually set up the client-side environment instead o
 
 There are **three** major steps to properly deploying all aspects of this service to the cloud.
 
+As this prototype is currently a proof of concept, there are no robust pipelines for maintaining cloud "production" environments. As such, existing deployments were set up using personal accounts on various cloud platforms. During the prototyping stage, deployments require manual work such as pulling the newest changes from the remote repository on the VM and re-launching the service. Similarly, there is currently no mechanism to log issues as they occur in real-time.
+
+Because the previous deployments to this prototype were performed ad hoc, it is necessary to go through all the deployment steps again on a separate account. The accounts across multiple cloud providers (Cloudflare, AWS, Netlify) responsible for hosting the existing deployments will be inaccessible to you.
+
 ### Domain management
 
 To properly query data on the frontend from your deployed backend environment, a custom domain is required to proxy and encrypt traffic between your frontend and backend endpoints.
