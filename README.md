@@ -6,6 +6,10 @@ Current deployment link: [https://nsf-prototype.netlify.app](https://nsf-prototy
 
 This project, in its current state, serves as a proof of concept to investigate how city planners could potentially identify wrongful evictions at CARES Act properties in the metro Atlanta area.
 
+## Project Management
+
+Navigate to the project board by clicking on the projects tab at the top of this page. You can also follow [this](https://github.com/orgs/Eviction-Data-Research/projects/1) link.
+
 ## Architecture
 
 ### Frontend
@@ -84,7 +88,7 @@ For the backend, it is recommended that you manually set up the backend environm
 
    `postgresql://[username[:password]@][host[:port],]/database`
 
-5. Run `uvicorn src.main:app --reload --port 8443`. Your backend API should now be listening on localhost:8443.
+5. Run `uvicorn src.main:app --reload --port 8443`. Your backend API should now be listening to requests on localhost:8443.
 
 ### Frontend
 
