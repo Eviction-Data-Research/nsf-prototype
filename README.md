@@ -10,6 +10,12 @@ This project, in its current state, serves as a proof of concept to investigate 
 
 Navigate to the project board by clicking on the projects tab at the top of this page. You can also follow [this](https://github.com/orgs/Eviction-Data-Research/projects/1) link.
 
+## Figma
+
+https://www.figma.com/design/F63qXTwkPnQlSRrwmQdwzB/Evictions-Snapshot-System?node-id=2-30&t=TBcm8VEJmc0N2KPq-1
+
+You must be invited in order to view the prototypes.
+
 ## Architecture
 
 ### Frontend
