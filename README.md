@@ -18,6 +18,9 @@ You must be invited in order to view the prototypes.
 
 ## Architecture
 
+> [!IMPORTANT]
+> Additional documentation about each service can be found in the corresponding subdirectory's README files (`/db`, `/client`, `/server`).
+
 ### Frontend
 
 The client-side of the prototype is written in React using [Vite](https://vitejs.dev/).
