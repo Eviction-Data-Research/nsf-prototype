@@ -16,6 +16,10 @@ https://www.figma.com/design/F63qXTwkPnQlSRrwmQdwzB/Evictions-Snapshot-System?no
 
 You must be invited in order to view the prototypes.
 
+## Process Documentation
+
+See [`process.md`](./process.md) for additional details on important decisions made through the development and design process, as well as the justifications for those decisions.
+
 ## Architecture
 
 > [!IMPORTANT]
