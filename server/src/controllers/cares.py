@@ -71,40 +71,53 @@ def get_all_cares_records(db: Session, counties: List[str], dateFrom: datetime.d
     return cares_eviction_count_copy.to_dict(orient='records'), cares_eviction_count_copy['count'].max().item()
 
 
-_MONTH_KEY = 'month'
-
-
 def get_property_eviction_count_by_month(db: Session, id: int, dateFrom: datetime.date | None = None,
                                          dateTo: datetime.date | None = None):
     date_filter_subquery = construct_date_filter_subquery(dateFrom, dateTo)
     date_from, date_to = populate_default_dates(dateFrom, dateTo)
 
     query = f"""
-        SELECT
-            to_char(months.month, 'MM/YY') AS label,
-            COALESCE(record_count, 0) AS value 
-        FROM (
-            SELECT generate_series(
-                date_trunc('month', '{date_from}'::date),
-                date_trunc('month', '{date_to}'::date),
-                '1 month'::interval
-            ) AS month
-        ) AS months
-        LEFT JOIN (
-            SELECT
-                date_trunc('month', "fileDate") AS month,
-                COUNT(*) AS record_count
-            FROM evictions AS e
-            LEFT JOIN "eviction-cares" AS r ON e."caseID" = r."evictionId"
-            LEFT JOIN cares AS c ON r."caresId" = c.id
-            WHERE c.id = {id} AND
-                r.type IN ('ADDRESS_MATCH', 'MANUAL_MATCH')
-                {date_filter_subquery}
-            GROUP BY 1 
-        ) AS record_counts
-        ON months.month = record_counts.month
-        ORDER BY months.month ASC;
---         LIMIT 12; 
+    WITH property AS (SELECT id, location
+                    FROM cares
+                    WHERE cares.id = {id}),
+        inexacts AS (SELECT "caseID",
+                            "fileDate"
+                    FROM evictions AS e
+                            LEFT JOIN "eviction-cares" AS r
+                                        ON e."caseID" = r."evictionId"
+                    WHERE ST_DWithin(
+                                (SELECT location FROM property)::geography,
+                                e.location::geography,
+                                {PROXIMITY_RADIUS},
+                                true
+                            )
+                        AND (
+                        r.type IS NULL OR
+                        (r."caresId" != {id} AND r.type = 'MANUAL_REJECT')
+                        ) {date_filter_subquery})
+    SELECT to_char(months.month, 'MM/YY')                    AS label,
+        COALESCE(record_counts.record_count, 0)           AS value,
+        COALESCE(record_counts_potential.record_count, 0) AS potential
+    FROM (SELECT generate_series(
+                        date_trunc('month', '{date_from}'::date),
+                        date_trunc('month', '{date_to}'::date),
+                        '1 month'::interval
+                ) AS month) AS months
+            LEFT JOIN (SELECT date_trunc('month', "fileDate") AS month,
+                            COUNT(*)                        AS record_count
+                        FROM evictions AS e
+                                LEFT JOIN "eviction-cares" AS r ON e."caseID" = r."evictionId"
+                                LEFT JOIN cares AS c ON r."caresId" = c.id
+                        WHERE c.id = {id}
+                        AND r.type IN ('ADDRESS_MATCH', 'MANUAL_MATCH')
+                        {date_filter_subquery}
+                        GROUP BY 1) AS record_counts
+                    ON months.month = record_counts.month
+            LEFT JOIN (SELECT date_trunc('month', "fileDate") AS month,
+                            COUNT(*)                        AS record_count
+                        FROM inexacts
+                        GROUP BY 1) AS record_counts_potential ON months.month = record_counts_potential.month
+    ORDER BY months.month;
     """
     property_eviction_count_by_month = pd.read_sql(query, db.connection())
     if property_eviction_count_by_month.shape[0] > 0:
@@ -119,32 +132,47 @@ def get_property_eviction_count_by_week(db: Session, id: int, dateFrom: datetime
     date_from, date_to = populate_default_dates(dateFrom, dateTo)
 
     query = f"""
-        SELECT
---             to_char(weeks.week, 'MM/DD/YY') || '-' || to_char(weeks.week + interval '6 days', 'MM/DD/YY') AS label,
-            to_char(weeks.week, 'MM/DD/YY') AS label,
-            COALESCE(record_count, 0) AS value 
-        FROM (
-            SELECT generate_series(
-                date_trunc('week', '{date_from}'::date) - interval '1 day', -- Start on Sunday
-                date_trunc('week', '{date_to}'::date) - interval '1 day' + interval '1 week',
-                '1 week'::interval
-            ) AS week
-        ) AS weeks
-        LEFT JOIN (
-            SELECT
-                date_trunc('week', "fileDate") - interval '1 day' AS week,
-                COUNT(*) AS record_count
-            FROM evictions AS e
-            LEFT JOIN "eviction-cares" AS r ON e."caseID" = r."evictionId"
-            LEFT JOIN cares AS c ON r."caresId" = c.id
-            WHERE c.id = {id} AND
-                r.type IN ('ADDRESS_MATCH', 'MANUAL_MATCH')
-                {date_filter_subquery}
-            GROUP BY 1
-        ) AS record_counts
-        ON weeks.week = record_counts.week
-        ORDER BY weeks.week;
---         LIMIT 20;
+    WITH property AS (SELECT id, location
+                    FROM cares
+                    WHERE cares.id = {id}),
+        inexacts AS (SELECT "caseID",
+                            "fileDate"
+                    FROM evictions AS e
+                            LEFT JOIN "eviction-cares" AS r
+                                        ON e."caseID" = r."evictionId"
+                    WHERE ST_DWithin(
+                                (SELECT location FROM property)::geography,
+                                e.location::geography,
+                                {PROXIMITY_RADIUS},
+                                true
+                            )
+                        AND (
+                        r.type IS NULL OR
+                        (r."caresId" != {id} AND r.type = 'MANUAL_REJECT')
+                        ) {date_filter_subquery})
+    SELECT to_char(weeks.week, 'MM/DD/YY')                   AS label,
+        COALESCE(record_counts.record_count, 0)           AS value,
+        COALESCE(record_counts_potential.record_count, 0) AS potential
+    FROM (SELECT generate_series(
+                        date_trunc('week', '{date_from}'::date) - interval '1 day', -- Start on Sunday
+                        date_trunc('week', '{date_to}'::date) - interval '1 day' + interval '1 week',
+                        '1 week'::interval
+                ) AS week) AS weeks
+            LEFT JOIN (SELECT date_trunc('week', "fileDate") - interval '1 day' AS week,
+                            COUNT(*)                                          AS record_count
+                        FROM evictions AS e
+                                LEFT JOIN "eviction-cares" AS r ON e."caseID" = r."evictionId"
+                                LEFT JOIN cares AS c ON r."caresId" = c.id
+                        WHERE c.id = {id}
+                        AND r.type IN ('ADDRESS_MATCH', 'MANUAL_MATCH')
+                        {date_filter_subquery}
+                        GROUP BY 1) AS record_counts
+                    ON weeks.week = record_counts.week
+            LEFT JOIN (SELECT date_trunc('week', "fileDate") - interval '1 day' AS week,
+                            COUNT(*)                                          AS record_count
+                        FROM inexacts
+                        GROUP BY 1) AS record_counts_potential ON weeks.week = record_counts_potential.week
+    ORDER BY weeks.week;
     """
     property_eviction_count_by_week = pd.read_sql(query, db.connection())
     if property_eviction_count_by_week.shape[0] > 0:
