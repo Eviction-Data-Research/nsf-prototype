@@ -82,7 +82,7 @@ function BarChart({
   const maxVal = Math.max(...data.map((d) => d.value));
 
   const yScale = scaleLinear<number>({
-    domain: [0, maxVal],
+    domain: [0, maxVal || 1],
     range: [yMax, 0],
     nice: true,
     clamp: true,
@@ -109,7 +109,7 @@ function BarChart({
           <AxisBottom top={yMax} scale={xScale} />
           {data.map((d) => {
             const barWidth = xScale.bandwidth();
-            const barHeight = yMax - yScale(d.value);
+            const barHeight = maxVal > 0 ? yMax - yScale(d.value) : 0;
             const barX = xScale(d.label);
             const barY = yMax - barHeight;
             return (
