@@ -4,7 +4,7 @@ import { urls } from "../../utils/consts";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Maximize2 } from "lucide-react";
 import Statistic from "./Statistic";
-import { BiBell, BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
+import { BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
 import BarChart from "../Charts/BarChart";
 import { Link } from "react-router-dom";
 import {
@@ -133,7 +133,6 @@ function PropertyPopup({
             label="Total count"
             value={data.property.count}
           />
-          <Statistic icon={<BiBell />} label="Last week" value={0} />
           <Statistic
             icon={<BiCalendarExclamation />}
             label="Suggested"

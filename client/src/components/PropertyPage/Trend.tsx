@@ -9,7 +9,7 @@ import {
   RangeSliderMark,
   Spinner,
 } from "@chakra-ui/react";
-import { BiBuildingHouse, BiBell, BiCalendarExclamation } from "react-icons/bi";
+import { BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
 import Statistic from "./Statistic";
 import { GetCaresPropertyOutput } from "../PropertyPopup/PropertyPopup";
 import BarChart, { TooltipData } from "../Charts/BarChart";
@@ -118,12 +118,6 @@ function Trend({ caresId, suggestions }: Props) {
           range={`${dayjs(dateFrom).format("MMM DD, YYYY")} - ${dayjs(
             dateTo
           ).format("MMM DD, YYYY")}`}
-        />
-        <Statistic
-          icon={<BiBell size={36} />}
-          label="Last week"
-          value={0}
-          range="Jan 2019 - Dec 2019"
         />
         <Statistic
           icon={<BiCalendarExclamation size={36} />}
