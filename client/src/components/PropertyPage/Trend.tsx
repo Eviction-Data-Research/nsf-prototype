@@ -77,26 +77,24 @@ function Trend({ caresId, suggestions }: Props) {
   const [monthRange, setMonthRange] =
     useState<[number, number]>(defaultMonthRange);
 
-  const debouncedWeekRange = useDebounce(weekRange, 300);
-  const debouncedMonthRange = useDebounce(monthRange, 300);
-
-  const dateFromDelta =
-    trendTabIndex === 0 ? debouncedWeekRange[0] : debouncedMonthRange[0];
-  const dateToDelta =
-    trendTabIndex === 0 ? debouncedWeekRange[1] : debouncedMonthRange[1];
+  const dateFromDelta = trendTabIndex === 0 ? weekRange[0] : monthRange[0];
+  const dateToDelta = trendTabIndex === 0 ? weekRange[1] : monthRange[1];
 
   const dateFrom = dayjs(START_DATE)
     .startOf(tabIndexTimeRangeMap[trendTabIndex])
-    .add(dateFromDelta, tabIndexTimeRangeMap[trendTabIndex])
-    .format("YYYY-MM-DD");
+    .add(dateFromDelta, tabIndexTimeRangeMap[trendTabIndex]);
   const dateTo = dayjs(START_DATE)
     .startOf(tabIndexTimeRangeMap[trendTabIndex])
-    .add(dateToDelta, tabIndexTimeRangeMap[trendTabIndex])
-    .format("YYYY-MM-DD");
+    .add(dateToDelta + 1, tabIndexTimeRangeMap[trendTabIndex])
+    .subtract(1, "day");
+
+  const dateFromLabel = useDebounce(dateFrom.format("YYYY-MM-DD"), 300);
+  const dateToLabel = useDebounce(dateTo.format("YYYY-MM-DD"), 300);
 
   const { data } = useQuery({
-    queryKey: ["caresById", caresId, dateFrom, dateTo],
-    queryFn: () => getCaresPropertyTrendById(caresId, dateFrom, dateTo),
+    queryKey: ["caresById", caresId, dateFromLabel, dateToLabel],
+    queryFn: () =>
+      getCaresPropertyTrendById(caresId, dateFromLabel, dateToLabel),
   });
 
   return (
@@ -183,8 +181,10 @@ function Trend({ caresId, suggestions }: Props) {
               aria-label={["min", "max"]}
               min={defaultWeekRange[0]}
               max={defaultWeekRange[1]}
-              onChange={(val) => setWeekRange(val as [number, number])}
-              defaultValue={weekRange}
+              value={weekRange}
+              onChange={(val) => {
+                if (val[1] - val[0] > 0) setWeekRange(val as [number, number]);
+              }}
               step={1}
             >
               <RangeSliderTrack>
@@ -207,10 +207,7 @@ function Trend({ caresId, suggestions }: Props) {
                 ml={-10}
                 fontSize="small"
               >
-                {dayjs(START_DATE)
-                  .startOf("week")
-                  .add(weekRange[0], "week")
-                  .format("MM/DD/YYYY")}
+                {dateFrom.format("MM/DD/YYYY")}
               </RangeSliderMark>
               <RangeSliderMark
                 value={weekRange[1]}
@@ -219,10 +216,7 @@ function Trend({ caresId, suggestions }: Props) {
                 ml={-10}
                 fontSize="small"
               >
-                {dayjs(START_DATE)
-                  .startOf("week")
-                  .add(weekRange[1], "week")
-                  .format("MM/DD/YYYY")}
+                {dateTo.format("MM/DD/YYYY")}
               </RangeSliderMark>
             </RangeSlider>
           </TabPanel>
@@ -250,8 +244,10 @@ function Trend({ caresId, suggestions }: Props) {
               aria-label={["min", "max"]}
               min={defaultMonthRange[0]}
               max={defaultMonthRange[1]}
-              onChange={(val) => setMonthRange(val as [number, number])}
-              defaultValue={monthRange}
+              value={monthRange}
+              onChange={(val) => {
+                if (val[1] - val[0] > 0) setMonthRange(val as [number, number]);
+              }}
               step={1}
             >
               <RangeSliderTrack>
@@ -271,25 +267,20 @@ function Trend({ caresId, suggestions }: Props) {
                 value={monthRange[0]}
                 textAlign="center"
                 mt={2}
-                ml={-10}
+                ml="-1.5rem"
                 fontSize="small"
               >
-                {dayjs(START_DATE)
-                  .startOf("month")
-                  .add(monthRange[0], "month")
-                  .format("MM/DD/YYYY")}
+                {dateFrom.format("MMM YYYY")}
               </RangeSliderMark>
               <RangeSliderMark
                 value={monthRange[1]}
                 textAlign="center"
                 mt={2}
-                ml={-10}
+                ml="-1.5rem"
                 fontSize="small"
+                whiteSpace="nowrap"
               >
-                {dayjs(START_DATE)
-                  .startOf("month")
-                  .add(monthRange[1], "month")
-                  .format("MM/DD/YYYY")}
+                {dateTo.format("MMM YYYY")}
               </RangeSliderMark>
             </RangeSlider>
           </TabPanel>
