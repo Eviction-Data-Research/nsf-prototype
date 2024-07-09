@@ -21,12 +21,12 @@ const router = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
-      {
-        path: "cares/:caresId",
-        element: <CaresProperty />,
-        loader: caresPropertyLoader,
-      },
     ],
+  },
+  {
+    path: "cares/:caresId",
+    element: <CaresProperty />,
+    loader: caresPropertyLoader,
   },
   {
     path: "/suggestion/:caresId/:caseID",
