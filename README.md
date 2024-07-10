@@ -58,7 +58,7 @@ You have 2 options in setting up the database. You can either **1. utilize Docke
 1. From the root of the repository, run:
 
    ```zsh
-   docker compose up -f docker-compose-dev.yml --build
+   docker compose -f docker-compose-dev.yml up --build
    ```
 
    This should build and run your database service.
@@ -160,7 +160,7 @@ Currently, the database and backend in the cloud environment live together on th
 7. Navigate back to the root directory of this project. Run the following command.
 
    ```
-   docker compose up -d --build -f docker-compose.yml
+   docker compose -f docker-compose.yml up -d --build
    ```
 
    You should now be serving the backend API and database on your virtual machine.
