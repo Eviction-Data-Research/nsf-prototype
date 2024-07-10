@@ -115,10 +115,10 @@ function StackedBarChart({
         <Group top={margin.top} left={margin.left}>
           <AxisLeft scale={yScale} />
           <AxisBottom top={yMax} scale={xScale} />
-          <BarStack<any, any>
+          <BarStack<Data, Values>
             data={data}
             keys={["value", "potential"]}
-            x={(d: TooltipData) => d.label}
+            x={(d: Data) => d.label}
             xScale={xScale}
             yScale={yScale}
             color={colorScale}
