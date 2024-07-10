@@ -13,6 +13,7 @@ export type CaresProperty = {
 export type TimeSeriesHistory = {
   label: string;
   value: number;
+  potential: number;
 };
 
 export type NamePermutation = {

@@ -12,7 +12,6 @@ import {
 import { BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
 import Statistic from "./Statistic";
 import { GetCaresPropertyOutput } from "../PropertyPopup/PropertyPopup";
-import BarChart, { TooltipData } from "../Charts/BarChart";
 import dayjs from "dayjs";
 import {
   RangeSlider,
@@ -25,6 +24,7 @@ import { START_DATE, urls } from "../../utils/consts";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useQuery } from "@tanstack/react-query";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import StackedBarChart, { TooltipData } from "../Charts/StackedBarChart";
 
 dayjs.extend(customParseFormat);
 
@@ -64,8 +64,41 @@ export async function getCaresPropertyTrendById(
   return data as GetCaresPropertyTrendOutput;
 }
 
-function TooltipContent({ data }: { data: TooltipData }) {
-  return <p>{data.value}</p>;
+function WeekTooltipContent({ data }: { data: TooltipData }) {
+  const start = dayjs(data.label, "MM/DD/YY");
+  const end = start.add(6, "day");
+  return (
+    <Flex flexDir="column" gap={1} p={0.5}>
+      <Text
+        fontWeight="bold"
+        textColor={data.key === "value" ? "blue.500" : "blue.100"}
+      >
+        {data.key === "value" ? "Evictions" : "Suggestions"}
+      </Text>
+      <Text fontWeight="semibold">{data[data["key"]]}</Text>
+      <Text fontSize="small">{`${start.format("MM/DD/YYYY")} - ${end.format(
+        "MM/DD/YYYY"
+      )}`}</Text>
+    </Flex>
+  );
+}
+
+function MonthTooltipContent({ data }: { data: TooltipData }) {
+  console.log(data.label);
+  return (
+    <Flex flexDir="column" gap={1} p={0.5}>
+      <Text
+        fontWeight="bold"
+        textColor={data.key === "value" ? "blue.500" : "blue.100"}
+      >
+        {data.key === "value" ? "Evictions" : "Suggestions"}
+      </Text>
+      <Text fontWeight="semibold">{data[data["key"]]}</Text>
+      <Text fontSize="small">
+        {dayjs(data.label, "MM/YY").format("MMM YYYY")}
+      </Text>
+    </Flex>
+  );
 }
 
 type Props = Pick<GetCaresPropertyOutput, "suggestions"> & { caresId: string };
@@ -154,16 +187,9 @@ function Trend({ caresId, suggestions }: Props) {
         <TabPanels h={400}>
           <TabPanel w="100%" h="100%">
             {data ? (
-              <BarChart
+              <StackedBarChart
                 data={data.history.week}
-                tooltipTitleTransformer={(data) => {
-                  const start = dayjs(data.label, "MM/DD/YY");
-                  const end = start.add(6, "day");
-                  return `${start.format("MM/DD/YYYY")} - ${end.format(
-                    "MM/DD/YYYY"
-                  )}`;
-                }}
-                tooltipContent={TooltipContent}
+                tooltipContent={WeekTooltipContent}
               />
             ) : (
               <Flex
@@ -222,12 +248,9 @@ function Trend({ caresId, suggestions }: Props) {
           </TabPanel>
           <TabPanel h="100%">
             {data ? (
-              <BarChart
+              <StackedBarChart
                 data={data.history.month}
-                tooltipTitleTransformer={(data) =>
-                  dayjs(data.label, "MM/YY").format("MMM YYYY")
-                }
-                tooltipContent={TooltipContent}
+                tooltipContent={MonthTooltipContent}
               />
             ) : (
               <Flex
