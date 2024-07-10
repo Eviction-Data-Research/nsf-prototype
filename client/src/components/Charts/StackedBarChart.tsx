@@ -145,10 +145,6 @@ function StackedBarChart({
                         // is what containerRef is set to in this example.
                         const eventSvgCoords = localPoint(event);
                         const left = bar.x + bar.width / 2;
-                        console.log({
-                          ...bar.bar.data,
-                          key: bar.key,
-                        });
                         showTooltip({
                           tooltipData: { ...bar.bar.data, key: bar.key },
                           tooltipTop: eventSvgCoords?.y,
