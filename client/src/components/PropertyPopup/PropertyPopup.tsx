@@ -15,6 +15,7 @@ import {
   TimeSeriesHistory,
 } from "../../utils/types";
 import dayjs from "dayjs";
+import StackedBarChart from "../Charts/StackedBarChart";
 
 export type GetCaresPropertyOutput = {
   property: CaresProperty;
@@ -141,15 +142,11 @@ function PropertyPopup({
         </Flex>
       </Flex>
       <Flex w="100%" h="12em" alignItems="center" textAlign="center">
-        {data.history.month.length > 0 ? (
-          <BarChart
-            data={data.history.month}
-            showGrid={false}
-            margin={{ top: 10, bottom: 25, left: 25, right: 0 }}
-          />
-        ) : (
-          <Text>No eviction data found for this CARES Act property</Text>
-        )}
+        <StackedBarChart
+          data={data.history.month}
+          showGrid={false}
+          margin={{ top: 10, bottom: 25, left: 25, right: 0 }}
+        />
       </Flex>
     </Flex>
   );
