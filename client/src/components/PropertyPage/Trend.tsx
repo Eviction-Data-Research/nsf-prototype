@@ -220,11 +220,13 @@ function Trend({ caresId, suggestions }: Props) {
                 index={0}
                 borderWidth={1}
                 borderColor="gray.100"
+                zIndex={0}
               />
               <RangeSliderThumb
                 index={1}
                 borderWidth={1}
                 borderColor="gray.100"
+                zIndex={0}
               />
               <RangeSliderMark
                 value={weekRange[0]}
@@ -281,11 +283,13 @@ function Trend({ caresId, suggestions }: Props) {
                 index={0}
                 borderWidth={1}
                 borderColor="gray.100"
+                zIndex={0}
               />
               <RangeSliderThumb
                 index={1}
                 borderWidth={1}
                 borderColor="gray.100"
+                zIndex={0}
               />
               <RangeSliderMark
                 value={monthRange[0]}
