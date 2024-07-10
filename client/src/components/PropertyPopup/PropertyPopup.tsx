@@ -96,9 +96,15 @@ function PropertyPopup({
     >
       <Flex flexDir="row" justifyContent="space-between">
         <Flex flexDir="column" gap={1}>
-          <Text fontWeight="bold" fontSize="lg" lineHeight="1.2em">
-            {data?.property.propertyName}
-          </Text>
+          <Link
+            to={`/cares/${data.property.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Text fontWeight="bold" fontSize="lg" lineHeight="1.2em">
+              {data?.property.propertyName}
+            </Text>
+          </Link>
           <Text
             fontSize="xs"
             lineHeight="1em"
