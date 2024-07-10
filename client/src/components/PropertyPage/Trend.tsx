@@ -84,7 +84,6 @@ function WeekTooltipContent({ data }: { data: TooltipData }) {
 }
 
 function MonthTooltipContent({ data }: { data: TooltipData }) {
-  console.log(data.label);
   return (
     <Flex flexDir="column" gap={1} p={0.5}>
       <Text
