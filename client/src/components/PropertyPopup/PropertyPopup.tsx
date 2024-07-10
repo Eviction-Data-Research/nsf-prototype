@@ -5,7 +5,6 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Maximize2 } from "lucide-react";
 import Statistic from "./Statistic";
 import { BiBuildingHouse, BiCalendarExclamation } from "react-icons/bi";
-import BarChart from "../Charts/BarChart";
 import { Link } from "react-router-dom";
 import {
   CaresProperty,
