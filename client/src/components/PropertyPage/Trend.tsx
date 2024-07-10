@@ -190,6 +190,7 @@ function Trend({ caresId, suggestions }: Props) {
               <StackedBarChart
                 data={data.history.week}
                 tooltipContent={WeekTooltipContent}
+                margin={{ top: 10, bottom: 25, left: 25, right: 25 }}
               />
             ) : (
               <Flex
@@ -251,6 +252,7 @@ function Trend({ caresId, suggestions }: Props) {
               <StackedBarChart
                 data={data.history.month}
                 tooltipContent={MonthTooltipContent}
+                margin={{ top: 10, bottom: 25, left: 25, right: 25 }}
               />
             ) : (
               <Flex
