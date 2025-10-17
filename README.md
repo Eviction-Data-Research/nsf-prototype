@@ -4,7 +4,7 @@ Current deployment link: [https://nsf-prototype.netlify.app](https://nsf-prototy
 
 ## Overview
 
-This project, in its current state, serves as a proof of concept to investigate how city planners could potentially identify wrongful evictions at CARES Act properties in the metro Atlanta area.
+This project, in its current state, serves as a proof of concept to investigate how legal aid, tenant organizers, and city planners could potentially identify wrongful evictions at CARES Act properties in the metro Atlanta area.
 
 ## Project Management
 
